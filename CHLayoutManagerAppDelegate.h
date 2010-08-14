@@ -25,7 +25,7 @@
 
 #import <Cocoa/Cocoa.h>
 
-@interface CHLayoutManagerAppDelegate : NSObject <NSApplicationDelegate> {
+@interface CHLayoutManagerAppDelegate : NSObject {
     NSWindow *window;
 	
 	IBOutlet NSSlider * widthSlider;

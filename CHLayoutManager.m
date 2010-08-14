@@ -28,6 +28,41 @@
 #import "NSView+CHLayout.h"
 #import <objc/runtime.h>
 
+@interface CHLayoutContainer : NSObject
+{
+	NSString * layoutName;
+	NSMutableArray * constraints;
+}
+
+@property (nonatomic, copy) NSString * layoutName;
+@property (readonly) NSMutableArray * constraints;
+
+@end
+
+@implementation CHLayoutContainer
+@synthesize layoutName, constraints;
+
++ (id) container {
+	return [[[self alloc] init] autorelease];
+}
+
+- (id) init {
+	if (self = [super init]) {
+		constraints = [[NSMutableArray alloc] init];
+	}
+	return self;
+}
+
+- (void) dealloc {
+	[constraints release];
+	[layoutName release];
+	[super dealloc];
+}
+
+@end
+
+
+
 static CHLayoutManager * _sharedLayoutManager = nil;
 
 __attribute__((constructor))
@@ -68,6 +103,7 @@ static void destroy_layoutManagerSingleton() {
 			isProcessingChanges = NO;
 			viewsToProcess = [[NSMutableArray alloc] init];
 			processedViews = [[NSMutableSet alloc] init];
+			constraints = [[NSMutableDictionary alloc] init];
 			
 			hasRegistered = NO;
 		}
@@ -81,6 +117,7 @@ static void destroy_layoutManagerSingleton() {
 - (void) dealloc {
 	[viewsToProcess release];
 	[processedViews release];
+	[constraints release];
 	[super dealloc];
 }
 
@@ -100,8 +137,8 @@ static void destroy_layoutManagerSingleton() {
 	 **/
 	
 	//constraints for this view:
-	NSArray * constraints = [aView constraints];
-	for (CHLayoutConstraint * constraint in constraints) {
+	NSArray * viewConstraints = [self constraintsOnView:aView];
+	for (CHLayoutConstraint * constraint in viewConstraints) {
 		[constraint applyToTargetView:aView];
 	}
 	
@@ -109,7 +146,7 @@ static void destroy_layoutManagerSingleton() {
 	for (NSView * subview in superSubviews) {
 		if (subview == aView) { continue; }
 		
-		NSArray * subviewConstraints = [subview constraints];
+		NSArray * subviewConstraints = [self constraintsOnView:subview];
 		for (CHLayoutConstraint * subviewConstraint in subviewConstraints) {
 			[subviewConstraint applyToTargetView:subview];
 		}
@@ -117,7 +154,7 @@ static void destroy_layoutManagerSingleton() {
 	
 	NSArray * subviews = [aView subviews];
 	for (NSView * subview in subviews) {
-		NSArray * subviewConstraints = [subview constraints];
+		NSArray * subviewConstraints = [self constraintsOnView:subview];
 		for (CHLayoutConstraint * subviewConstraint in subviewConstraints) {
 			[subviewConstraint applyToTargetView:subview];
 		}
@@ -151,6 +188,51 @@ static void destroy_layoutManagerSingleton() {
 - (void) frameChanged:(NSNotification *)notification {
 	NSView * view = [notification object];
 	[self beginProcessingView:view];
+}
+
+#pragma mark -
+
+- (NSValue *) keyForView:(NSView *)view {
+	return [NSValue valueWithPointer:view];	
+}
+
+- (void) addConstraint:(CHLayoutConstraint *)constraint toView:(NSView *)view {
+	NSValue * viewPointer = [self keyForView:view];
+	CHLayoutContainer * viewContainer = [constraints objectForKey:viewPointer];
+	if (viewContainer == nil) {
+		viewContainer = [CHLayoutContainer container];
+		[constraints setObject:viewContainer forKey:viewPointer];
+	}
+	[[viewContainer constraints] addObject:constraint];
+	[self beginProcessingView:view];
+}
+
+- (void) removeConstraintsFromView:(NSView *)view {
+	NSValue * viewPointer = [self keyForView:view];
+	[constraints removeObjectForKey:viewPointer];
+}
+
+- (NSArray *) constraintsOnView:(NSView *)view {
+	NSValue * viewPointer = [self keyForView:view];
+	CHLayoutContainer * container = [constraints objectForKey:viewPointer];
+	if (container == nil) { return [NSArray array]; }
+	return [[[container constraints] copy] autorelease];
+}
+
+- (NSString *) layoutNameForView:(NSView *)view {
+	NSValue * viewPointer = [self keyForView:view];
+	CHLayoutContainer * container = [constraints objectForKey:viewPointer];
+	return [container layoutName];
+}
+
+- (void) setLayoutName:(NSString *)name forView:(NSView *)view {
+	NSValue * viewPointer = [self keyForView:view];
+	CHLayoutContainer * viewContainer = [constraints objectForKey:viewPointer];
+	if (viewContainer == nil) {
+		viewContainer = [CHLayoutContainer container];
+		[constraints setObject:viewContainer forKey:viewPointer];
+	}
+	[viewContainer setLayoutName:name];
 }
 
 @end

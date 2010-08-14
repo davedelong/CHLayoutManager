@@ -31,11 +31,18 @@
 	BOOL hasRegistered;
 	BOOL isProcessingChanges;
 	
+	NSMutableDictionary * constraints;
 	NSMutableArray * viewsToProcess;
 	NSMutableSet * processedViews;
 }
 
 + (id) sharedLayoutManager;
+
+- (void) addConstraint:(CHLayoutConstraint *)constraint toView:(NSView *)view;
+- (void) removeConstraintsFromView:(NSView *)view;
+- (NSArray *) constraintsOnView:(NSView *)view;
+- (NSString *) layoutNameForView:(NSView *)view;
+- (void) setLayoutName:(NSString *)name forView:(NSView *)view;
 
 - (void) beginProcessingView:(NSView *)aView;
 

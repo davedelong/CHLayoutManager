@@ -24,44 +24,28 @@
  **/
 
 #import "NSView+CHLayout.h"
-#import <objc/runtime.h>
 #import "CHLayoutManager.h"
-
-static NSString * NSViewLayoutName_CHLayout = @"NSViewLayoutName_CHLayout";
-static NSString * NSViewConstraints_CHLayout = @"NSViewConstraints_CHLayout";
 
 @implementation NSView (CHLayout)
 
 - (void) setLayoutName:(NSString *)newLayoutName {
-	objc_setAssociatedObject(self, &NSViewLayoutName_CHLayout, newLayoutName, OBJC_ASSOCIATION_COPY);
+	[[CHLayoutManager sharedLayoutManager] setLayoutName:newLayoutName forView:self];
 }
 
 - (NSString *) layoutName {
-	return (NSString *)objc_getAssociatedObject(self, &NSViewLayoutName_CHLayout);
+	return [[CHLayoutManager sharedLayoutManager] layoutNameForView:self];
 }
 
 - (void) addConstraint:(CHLayoutConstraint *)constraint {
-	NSMutableArray * constraints = (NSMutableArray *)objc_getAssociatedObject(self, &NSViewConstraints_CHLayout);
-	if (constraints == nil) {
-		constraints = [NSMutableArray array];
-		objc_setAssociatedObject(self, &NSViewConstraints_CHLayout, constraints, OBJC_ASSOCIATION_RETAIN);
-	}
-	[constraints addObject:constraint];
-	[[CHLayoutManager sharedLayoutManager] beginProcessingView:self];
+	[[CHLayoutManager sharedLayoutManager] addConstraint:constraint toView:self];
 }
 
 - (NSArray *) constraints {
-	NSMutableArray * constraints = (NSMutableArray *)objc_getAssociatedObject(self, &NSViewConstraints_CHLayout);
-	if (constraints == nil) { return [NSArray array]; }
-	
-	return [[constraints copy] autorelease];
+	return [[CHLayoutManager sharedLayoutManager] constraintsOnView:self];
 }
 
 - (void) removeAllConstraints {
-	NSMutableArray * constraints = (NSMutableArray *)objc_getAssociatedObject(self, &NSViewConstraints_CHLayout);
-	if (constraints != nil) {
-		[constraints removeAllObjects];
-	}
+	[[CHLayoutManager sharedLayoutManager] removeConstraintsFromView:self];
 }
 
 - (CGFloat) valueForLayoutAttribute:(CHLayoutConstraintAttribute)attribute {
