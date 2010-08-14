@@ -26,7 +26,7 @@ Then `#import "CHLayout.h"` in any .m file that needs to apply constraints to vi
 
 ##Supported Platforms
 
-- Mac OS X 10.5+ (modern runtime only)
+- Mac OS X 10.5+
 
 ##Special Considerations
 
