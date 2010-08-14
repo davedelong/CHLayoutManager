@@ -148,7 +148,10 @@ static void destroy_layoutManagerSingleton() {
 		
 		NSArray * subviewConstraints = [self constraintsOnView:subview];
 		for (CHLayoutConstraint * subviewConstraint in subviewConstraints) {
-			[subviewConstraint applyToTargetView:subview];
+			NSView * sourceView = [subview relativeViewForName:[subviewConstraint sourceName]];
+			if (sourceView == aView) {
+				[subviewConstraint applyToTargetView:subview];
+			}
 		}
 	}
 	
@@ -156,7 +159,10 @@ static void destroy_layoutManagerSingleton() {
 	for (NSView * subview in subviews) {
 		NSArray * subviewConstraints = [self constraintsOnView:subview];
 		for (CHLayoutConstraint * subviewConstraint in subviewConstraints) {
-			[subviewConstraint applyToTargetView:subview];
+			NSView * sourceView = [subview relativeViewForName:[subviewConstraint sourceName]];
+			if (sourceView == aView) {
+				[subviewConstraint applyToTargetView:subview];
+			}
 		}
 	}
 }
