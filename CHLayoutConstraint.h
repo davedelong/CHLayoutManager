@@ -68,5 +68,6 @@ typedef CGFloat (^CHLayoutTransformer)(CGFloat);
 
 - (CGFloat) transformValue:(CGFloat)original;
 - (void) applyToTargetView:(NSView *)target;
+- (void) applyToTargetView:(NSView *)target sourceView:(NSView *)source;
 
 @end

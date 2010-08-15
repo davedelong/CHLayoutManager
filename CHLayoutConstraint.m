@@ -159,6 +159,10 @@
 
 - (void) applyToTargetView:(NSView *)target {
 	NSView * source = [target relativeViewForName:[self sourceName]];
+	[self applyToTargetView:target sourceView:source];
+}
+
+- (void) applyToTargetView:(NSView *)target sourceView:(NSView *)source {
 	if (source == target) { return; }
 	if (source == nil) { return; }
 	if ([self sourceAttribute] == 0) { return; }
