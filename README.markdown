@@ -33,6 +33,14 @@ Then `#import "CHLayout.h"` in any .m file that needs to apply constraints to vi
 - It's possible to set up circular dependencies on constraints.  Do so at your own risk.
 - In order to constrain a view to its superview, create a constraint with the `sourceName` of `@"superview"`.
 
+##Improvements over `CAConstraint` objects
+
+- `CHLayoutConstraints` support all the features of `CAConstraints`
+- `CHLayoutConstraints` allow you to specify an `NSValueTransformer` in order to do more complex transformations.
+- `CHLayoutConstraints` allow you to specify a block in order to do more complex transformations.
+
+(The included sample application shows how to use a `CHLayoutTransformer` block in order to apply constraints that are not possible via the normal mechanism.)
+
 ##License
 
 CHLayoutManager is licensed under the MIT license, which is reproduced in its entirety here:

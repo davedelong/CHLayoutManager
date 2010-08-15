@@ -25,6 +25,86 @@
 
 #import "CHLayout.h"
 
+#pragma mark Value Transformers
+
+@interface CHLayoutValueTransformer : NSValueTransformer
+{
+	CGFloat offset;
+	CGFloat scale;
+}
+
++ (id) transformerWithOffset:(CGFloat)anOffset scale:(CGFloat)aScale;
+- (id) initWithOffset:(CGFloat)anOffset scale:(CGFloat)aScale;
+
+@end
+
+@implementation CHLayoutValueTransformer
+
++ (id) transformerWithOffset:(CGFloat)anOffset scale:(CGFloat)aScale {
+	return [[[self alloc] initWithOffset:anOffset scale:aScale] autorelease];
+}
+
+- (id) initWithOffset:(CGFloat)anOffset scale:(CGFloat)aScale {
+	if (self = [super init]) {
+		offset = anOffset;
+		scale = aScale;
+	}
+	return self;
+}
+
+- (id) transformedValue:(id)value {
+	if ([value respondsToSelector:@selector(floatValue)] == NO) { return [NSNumber numberWithInt:0]; }
+	
+	CGFloat source = [value floatValue];
+	CGFloat transformed = (source * scale) + offset;
+	return [NSNumber numberWithFloat:transformed];
+}
+
+@end
+
+#if NS_BLOCKS_AVAILABLE
+@interface CHLayoutBlockValueTransformer : NSValueTransformer
+{
+	CHLayoutTransformer transformer;
+}
+
++ (id) transformerWithBlock:(CHLayoutTransformer)block;
+- (id) initWithBlock:(CHLayoutTransformer)block;
+
+@end
+
+@implementation CHLayoutBlockValueTransformer
+
++ (id) transformerWithBlock:(CHLayoutTransformer)block {
+	return [[[self alloc] initWithBlock:block] autorelease];
+}
+
+- (id) initWithBlock:(CHLayoutTransformer)block {
+	if (self = [super init]) {
+		transformer = Block_copy(block);
+	}
+	return self;
+}
+
+- (void) dealloc {
+	Block_release(transformer);
+	[super dealloc];
+}
+
+- (id) transformedValue:(id)value {
+	if ([value respondsToSelector:@selector(floatValue)] == NO) { return [NSNumber numberWithInt:0]; }
+	
+	CGFloat source = [value floatValue];
+	CGFloat transformed = transformer(source);
+	return [NSNumber numberWithFloat:transformed];
+}
+
+@end
+#endif
+
+
+#pragma mark -
+#pragma mark CHLayoutConstraint
 
 @implementation CHLayoutConstraint
 @synthesize offset, scale, attribute, sourceAttribute, sourceName;
@@ -40,27 +120,41 @@
 }
 
 + (id)constraintWithAttribute:(CHLayoutConstraintAttribute)attr relativeTo:(NSString *)srcLayer attribute:(CHLayoutConstraintAttribute)srcAttr scale:(CGFloat)scale offset:(CGFloat)offset {
-	return [[[self alloc] initWithAttribute:attr relativeTo:srcLayer attribute:srcAttr scale:scale offset:offset] autorelease];
+	CHLayoutValueTransformer * t = [CHLayoutValueTransformer transformerWithOffset:offset scale:scale];
+	return [self constraintWithAttribute:attr relativeTo:srcLayer attribute:srcAttr valueTransformer:t];
 }
 
-- (id)initWithAttribute:(CHLayoutConstraintAttribute)attr relativeTo:(NSString *)srcLayer attribute:(CHLayoutConstraintAttribute)srcAttr scale:(CGFloat)aScale offset:(CGFloat)anOffset {
+#if NS_BLOCKS_AVAILABLE
++ (id) constraintWithAttribute:(CHLayoutConstraintAttribute)attr relativeTo:(NSString *)srcLayer attribute:(CHLayoutConstraintAttribute)srcAttr blockTransformer:(CHLayoutTransformer)transformer {
+	CHLayoutBlockValueTransformer * t = [CHLayoutBlockValueTransformer transformerWithBlock:transformer];
+	return [self constraintWithAttribute:attr relativeTo:srcLayer attribute:srcAttr valueTransformer:t];
+}
+#endif
+
++ (id) constraintWithAttribute:(CHLayoutConstraintAttribute)attr relativeTo:(NSString *)srcLayer attribute:(CHLayoutConstraintAttribute)srcAttr valueTransformer:(NSValueTransformer *)transformer {
+	return [[[self alloc] initWithAttribute:attr relativeTo:srcLayer attribute:srcAttr valueTransformer:transformer] autorelease];
+}
+
+- (id)initWithAttribute:(CHLayoutConstraintAttribute)attr relativeTo:(NSString *)srcLayer attribute:(CHLayoutConstraintAttribute)srcAttr valueTransformer:(NSValueTransformer *)transformer {
 	if (self = [super init]) {
-		offset = anOffset;
-		scale = aScale;
 		attribute = attr;
 		sourceAttribute = srcAttr;
 		sourceName = [srcLayer copy];
+		valueTransformer = [transformer retain];
 	}
 	return self;
 }
 
 - (void) dealloc {
+	[valueTransformer release];
 	[sourceName release];
 	[super dealloc];
 }
 
 - (CGFloat) transformValue:(CGFloat)original {
-	return (original * scale) + offset;
+	id transformed = [valueTransformer transformedValue:[NSNumber numberWithFloat:original]];
+	if ([transformed respondsToSelector:@selector(floatValue)] == NO) { return 0; }
+	return [transformed floatValue];
 }
 
 - (void) applyToTargetView:(NSView *)target {

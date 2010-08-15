@@ -32,17 +32,21 @@ typedef enum {
 	CHLayoutConstraintAttributeMaxX = 4, //the top edge
 	CHLayoutConstraintAttributeWidth = 5, //the width
 	CHLayoutConstraintAttributeHeight = 6, //the height
-	CHLayoutConstraintAttributeMidY = 7,
-	CHLayoutConstraintAttributeMidX = 8
+	CHLayoutConstraintAttributeMidY = 7, //the vertical center
+	CHLayoutConstraintAttributeMidX = 8 //the horizontal center
 } CHLayoutConstraintAttribute;
 
+#if NS_BLOCKS_AVAILABLE
+typedef CGFloat (^CHLayoutTransformer)(CGFloat);
+#endif
+
 @interface CHLayoutConstraint : NSObject {
-	CGFloat offset;
-	CGFloat scale;
 	CHLayoutConstraintAttribute attribute;
 	
 	NSString * sourceName;
 	CHLayoutConstraintAttribute sourceAttribute;
+	
+	NSValueTransformer * valueTransformer;
 }
 
 @property (readonly) CGFloat offset;
@@ -51,11 +55,16 @@ typedef enum {
 @property (readonly) CHLayoutConstraintAttribute sourceAttribute;
 @property (readonly) NSString * sourceName;
 
-+ (id)constraintWithAttribute:(CHLayoutConstraintAttribute)attr relativeTo:(NSString *)srcLayer attribute:(CHLayoutConstraintAttribute)srcAttr;
-+ (id)constraintWithAttribute:(CHLayoutConstraintAttribute)attr relativeTo:(NSString *)srcLayer attribute:(CHLayoutConstraintAttribute)srcAttr offset:(CGFloat)offset;
-+ (id)constraintWithAttribute:(CHLayoutConstraintAttribute)attr relativeTo:(NSString *)srcLayer attribute:(CHLayoutConstraintAttribute)srcAttr scale:(CGFloat)scale offset:(CGFloat)offset;
++ (id) constraintWithAttribute:(CHLayoutConstraintAttribute)attr relativeTo:(NSString *)srcLayer attribute:(CHLayoutConstraintAttribute)srcAttr;
++ (id) constraintWithAttribute:(CHLayoutConstraintAttribute)attr relativeTo:(NSString *)srcLayer attribute:(CHLayoutConstraintAttribute)srcAttr offset:(CGFloat)offset;
++ (id) constraintWithAttribute:(CHLayoutConstraintAttribute)attr relativeTo:(NSString *)srcLayer attribute:(CHLayoutConstraintAttribute)srcAttr scale:(CGFloat)scale offset:(CGFloat)offset;
 
-- (id)initWithAttribute:(CHLayoutConstraintAttribute)attr relativeTo:(NSString *)srcLayer attribute:(CHLayoutConstraintAttribute)srcAttr scale:(CGFloat)scale offset:(CGFloat)offset;
+#if NS_BLOCKS_AVAILABLE
++ (id) constraintWithAttribute:(CHLayoutConstraintAttribute)attr relativeTo:(NSString *)srcLayer attribute:(CHLayoutConstraintAttribute)srcAttr blockTransformer:(CHLayoutTransformer)transformer;
+#endif
+
++ (id) constraintWithAttribute:(CHLayoutConstraintAttribute)attr relativeTo:(NSString *)srcLayer attribute:(CHLayoutConstraintAttribute)srcAttr valueTransformer:(NSValueTransformer *)transformer;
+- (id) initWithAttribute:(CHLayoutConstraintAttribute)attr relativeTo:(NSString *)srcLayer attribute:(CHLayoutConstraintAttribute)srcAttr valueTransformer:(NSValueTransformer *)transformer;
 
 - (CGFloat) transformValue:(CGFloat)original;
 - (void) applyToTargetView:(NSView *)target;

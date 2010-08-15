@@ -49,6 +49,16 @@
 	[leftVerticalButton addConstraint:[CHLayoutConstraint constraintWithAttribute:CHLayoutConstraintAttributeMinX relativeTo:@"superview" attribute:CHLayoutConstraintAttributeMinX offset:37]];
 	[rightVerticalButton addConstraint:[CHLayoutConstraint constraintWithAttribute:CHLayoutConstraintAttributeMaxX relativeTo:@"superview" attribute:CHLayoutConstraintAttributeMaxX offset:-13]];
 	[rightVerticalButton addConstraint:[CHLayoutConstraint constraintWithAttribute:CHLayoutConstraintAttributeMinY relativeTo:@"leftVertical" attribute:CHLayoutConstraintAttributeMinY]];
+	
+#if NS_BLOCKS_AVAILABLE
+	
+	CHLayoutTransformer transformer = ^(CGFloat source) {
+		CGFloat superViewHeight = [[rightVerticalButton superview] frame].size.height;
+		return (superViewHeight - source);
+	};
+	[rightVerticalButton addConstraint:[CHLayoutConstraint constraintWithAttribute:CHLayoutConstraintAttributeMaxY relativeTo:@"leftVertical" attribute:CHLayoutConstraintAttributeMinY blockTransformer:transformer]];
+	
+#endif
 }
 
 - (IBAction) sliderChanged:(id)sender {
