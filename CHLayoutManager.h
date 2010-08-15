@@ -31,7 +31,7 @@
 	BOOL hasRegistered;
 	BOOL isProcessingChanges;
 	
-	NSMutableDictionary * constraints;
+	NSMapTable * constraints;
 	NSMutableArray * viewsToProcess;
 	NSMutableSet * processedViews;
 }

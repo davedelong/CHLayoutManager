@@ -103,7 +103,8 @@ static void destroy_layoutManagerSingleton() {
 			isProcessingChanges = NO;
 			viewsToProcess = [[NSMutableArray alloc] init];
 			processedViews = [[NSMutableSet alloc] init];
-			constraints = [[NSMutableDictionary alloc] init];
+			
+			constraints = [[NSMapTable mapTableWithWeakToStrongObjects] retain];
 			
 			hasRegistered = NO;
 		}

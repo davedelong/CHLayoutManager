@@ -42,6 +42,7 @@ Then `#import "CHLayout.h"` in any .m file that needs to apply constraints to vi
 - In order to constrain a view to its superview, create a constraint with the `sourceName` of `@"superview"`.
 - It's very easy to create a [retain cycle][retain-cycle] if you use a block transformer that references `self` in a constraint, and then have `self` retain the constraint.  ([Blocks retain objects that they capture][block-retain])
 - You may add as many constraints to a view as you like.  If a view has multiple constraints on the same attributed, they will all be evaluated in the order they were added.  Beware.
+- If you are manually managing your memory (ie, not using garbage collection), then it is recommend that you use `[myView removeAllConstraints]` before the view is deallocated.  Doing so will ensure that all constraints and value transformers associated with that view are properly cleaned up.  If you are using garbage collection, these will be cleaned up for you.
 
 ##License
 
