@@ -130,18 +130,12 @@ static void destroy_layoutManagerSingleton() {
 	
 	/**
 	 ORDER OF OPERATIONS:
-	 1.  See if this view has any direct constraints
-	 2.  See if this view has any siblings with constraints to this view
-	 3.  See if this view has any children with constraints to superview
+	 1.  See if this view has any siblings with constraints to this view
+	 2.  See if this view has any children with constraints to superview
 	 
 	 **/
 	
-	//constraints for this view:
-	NSArray * viewConstraints = [self constraintsOnView:aView];
-	for (CHLayoutConstraint * constraint in viewConstraints) {
-		[constraint applyToTargetView:aView];
-	}
-	
+	//siblings constrained to this view
 	NSArray * superSubviews = [[aView superview] subviews];
 	for (NSView * subview in superSubviews) {
 		if (subview == aView) { continue; }
@@ -155,6 +149,7 @@ static void destroy_layoutManagerSingleton() {
 		}
 	}
 	
+	//subviews constrained to this view
 	NSArray * subviews = [aView subviews];
 	for (NSView * subview in subviews) {
 		NSArray * subviewConstraints = [self constraintsOnView:subview];
