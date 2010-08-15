@@ -198,45 +198,36 @@ static void destroy_layoutManagerSingleton() {
 
 #pragma mark -
 
-- (NSValue *) keyForView:(NSView *)view {
-	return [NSValue valueWithPointer:view];	
-}
-
 - (void) addConstraint:(CHLayoutConstraint *)constraint toView:(NSView *)view {
-	NSValue * viewPointer = [self keyForView:view];
-	CHLayoutContainer * viewContainer = [constraints objectForKey:viewPointer];
+	CHLayoutContainer * viewContainer = [constraints objectForKey:view];
 	if (viewContainer == nil) {
 		viewContainer = [CHLayoutContainer container];
-		[constraints setObject:viewContainer forKey:viewPointer];
+		[constraints setObject:viewContainer forKey:view];
 	}
 	[[viewContainer constraints] addObject:constraint];
 	[self beginProcessingView:view];
 }
 
 - (void) removeConstraintsFromView:(NSView *)view {
-	NSValue * viewPointer = [self keyForView:view];
-	[constraints removeObjectForKey:viewPointer];
+	[constraints removeObjectForKey:view];
 }
 
 - (NSArray *) constraintsOnView:(NSView *)view {
-	NSValue * viewPointer = [self keyForView:view];
-	CHLayoutContainer * container = [constraints objectForKey:viewPointer];
+	CHLayoutContainer * container = [constraints objectForKey:view];
 	if (container == nil) { return [NSArray array]; }
 	return [[[container constraints] copy] autorelease];
 }
 
 - (NSString *) layoutNameForView:(NSView *)view {
-	NSValue * viewPointer = [self keyForView:view];
-	CHLayoutContainer * container = [constraints objectForKey:viewPointer];
+	CHLayoutContainer * container = [constraints objectForKey:view];
 	return [container layoutName];
 }
 
 - (void) setLayoutName:(NSString *)name forView:(NSView *)view {
-	NSValue * viewPointer = [self keyForView:view];
-	CHLayoutContainer * viewContainer = [constraints objectForKey:viewPointer];
+	CHLayoutContainer * viewContainer = [constraints objectForKey:view];
 	if (viewContainer == nil) {
 		viewContainer = [CHLayoutContainer container];
-		[constraints setObject:viewContainer forKey:viewPointer];
+		[constraints setObject:viewContainer forKey:view];
 	}
 	[viewContainer setLayoutName:name];
 }
