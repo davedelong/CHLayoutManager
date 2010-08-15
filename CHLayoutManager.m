@@ -69,7 +69,7 @@ __attribute__((constructor))
 static void construct_layoutManagerSingleton() {
 	NSAutoreleasePool * p = [[NSAutoreleasePool alloc] init];
 	_sharedLayoutManager = [[CHLayoutManager alloc] init];
-	[p release];
+	[p drain];
 }
 
 __attribute__((destructor))
@@ -79,7 +79,7 @@ static void destroy_layoutManagerSingleton() {
 	
 	NSAutoreleasePool * p = [[NSAutoreleasePool alloc] init];
 	[_sharedLayoutManager release], _sharedLayoutManager = nil;
-	[p release];
+	[p drain];
 }
 
 @implementation CHLayoutManager
