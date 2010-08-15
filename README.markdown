@@ -41,6 +41,10 @@ Then `#import "CHLayout.h"` in any .m file that needs to apply constraints to vi
 
 (The included sample application shows how to use a `CHLayoutTransformer` block in order to apply constraints that are not possible via the normal mechanism.)
 
+###Caution
+
+Since blocks capture their environment, it's very easy to create a [retain cycle][retain-cycle].  If you create a block transformer that references `self` and then create a `CHLayoutConstraint` with it, and then have `self` retain the constraint, you will have created a retain cycle.  FYI.
+
 ##License
 
 CHLayoutManager is licensed under the MIT license, which is reproduced in its entirety here:
@@ -64,3 +68,6 @@ CHLayoutManager is licensed under the MIT license, which is reproduced in its en
 >LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 >OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 >THE SOFTWARE.
+
+
+  [retain-cycle]: http://developer.apple.com/mac/library/documentation/Cocoa/Conceptual/MemoryMgmt/Articles/mmObjectOwnership.html#//apple_ref/doc/uid/20000043-1000810
