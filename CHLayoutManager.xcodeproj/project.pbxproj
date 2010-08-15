@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		1DDD58160DA1D0A300B32029 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1DDD58140DA1D0A300B32029 /* MainMenu.xib */; };
 		256AC3DA0F4B6AC300CF3369 /* CHLayoutManagerAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 256AC3D90F4B6AC300CF3369 /* CHLayoutManagerAppDelegate.m */; };
+		551F7B8F121867DF00A573EE /* SinTransformer.m in Sources */ = {isa = PBXBuildFile; fileRef = 551F7B8E121867DF00A573EE /* SinTransformer.m */; };
 		558686A31215C7910014B300 /* CHLayoutManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 558686A21215C7910014B300 /* CHLayoutManager.m */; };
 		558686A61215CBD40014B300 /* CHLayoutConstraint.m in Sources */ = {isa = PBXBuildFile; fileRef = 558686A51215CBD40014B300 /* CHLayoutConstraint.m */; };
 		558686C21215D0C40014B300 /* NSView+CHLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 558686C11215D0C40014B300 /* NSView+CHLayout.m */; };
@@ -29,6 +30,8 @@
 		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		550C4453121663CC00E0002B /* CHLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CHLayout.h; sourceTree = "<group>"; };
+		551F7B8D121867DF00A573EE /* SinTransformer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SinTransformer.h; sourceTree = "<group>"; };
+		551F7B8E121867DF00A573EE /* SinTransformer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SinTransformer.m; sourceTree = "<group>"; };
 		558686A11215C7910014B300 /* CHLayoutManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CHLayoutManager.h; sourceTree = "<group>"; };
 		558686A21215C7910014B300 /* CHLayoutManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CHLayoutManager.m; sourceTree = "<group>"; };
 		558686A41215CBD40014B300 /* CHLayoutConstraint.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CHLayoutConstraint.h; sourceTree = "<group>"; };
@@ -63,6 +66,8 @@
 				558686A51215CBD40014B300 /* CHLayoutConstraint.m */,
 				256AC3D80F4B6AC300CF3369 /* CHLayoutManagerAppDelegate.h */,
 				256AC3D90F4B6AC300CF3369 /* CHLayoutManagerAppDelegate.m */,
+				551F7B8D121867DF00A573EE /* SinTransformer.h */,
+				551F7B8E121867DF00A573EE /* SinTransformer.m */,
 			);
 			name = Classes;
 			sourceTree = "<group>";
@@ -193,6 +198,7 @@
 				558686A31215C7910014B300 /* CHLayoutManager.m in Sources */,
 				558686A61215CBD40014B300 /* CHLayoutConstraint.m in Sources */,
 				558686C21215D0C40014B300 /* NSView+CHLayout.m in Sources */,
+				551F7B8F121867DF00A573EE /* SinTransformer.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

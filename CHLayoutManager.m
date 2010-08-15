@@ -128,11 +128,15 @@ static void destroy_layoutManagerSingleton() {
 	}
 	[processedViews addObject:aView];
 	
+	NSArray * viewConstraints = [self constraintsOnView:aView];
+	for (CHLayoutConstraint * constraint in viewConstraints) {
+		[constraint applyToTargetView:aView];
+	}
+	
 	/**
 	 ORDER OF OPERATIONS:
 	 1.  See if this view has any siblings with constraints to this view
 	 2.  See if this view has any children with constraints to superview
-	 
 	 **/
 	
 	//siblings constrained to this view

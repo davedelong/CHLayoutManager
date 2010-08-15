@@ -25,6 +25,8 @@
 
 #import "CHLayoutManagerAppDelegate.h"
 #import "CHLayout.h"
+#import "SinTransformer.h"
+
 
 @implementation CHLayoutManagerAppDelegate
 
@@ -38,7 +40,7 @@
 	[button2 addConstraint:[CHLayoutConstraint constraintWithAttribute:CHLayoutConstraintAttributeMaxY relativeTo:@"button1" attribute:CHLayoutConstraintAttributeMaxY]];
 	[button2 addConstraint:[CHLayoutConstraint constraintWithAttribute:CHLayoutConstraintAttributeWidth relativeTo:@"button1" attribute:CHLayoutConstraintAttributeWidth]];
 	
-	[progress startAnimation:nil];
+//	[progress startAnimation:nil];
 	CHLayoutConstraint * centerHorizontal = [CHLayoutConstraint constraintWithAttribute:CHLayoutConstraintAttributeMidX relativeTo:@"superview" attribute:CHLayoutConstraintAttributeMidX];
 	CHLayoutConstraint * centerVertical = [CHLayoutConstraint constraintWithAttribute:CHLayoutConstraintAttributeMidY relativeTo:@"superview" attribute:CHLayoutConstraintAttributeMidY];
 	[progress addConstraint:centerHorizontal];
@@ -59,6 +61,15 @@
 	[rightVerticalButton addConstraint:[CHLayoutConstraint constraintWithAttribute:CHLayoutConstraintAttributeMaxY relativeTo:@"leftVertical" attribute:CHLayoutConstraintAttributeMinY blockTransformer:transformer]];
 	
 #endif
+	
+	[helpButton addConstraint:[CHLayoutConstraint constraintWithAttribute:CHLayoutConstraintAttributeMinX relativeTo:@"leftVertical" attribute:CHLayoutConstraintAttributeMinY scale:2.0 offset:0.0]];
+	
+	SinTransformer * sinTransformer = [[SinTransformer alloc] init];
+	[helpButton addConstraint:[CHLayoutConstraint constraintWithAttribute:CHLayoutConstraintAttributeMinY relativeTo:@"button1" attribute:CHLayoutConstraintAttributeMinY valueTransformer:sinTransformer]];
+	[sinTransformer release];
+	
+	[self sliderChanged:nil];
+//	[[CHLayoutManager sharedLayoutManager] beginProcessingView:[window contentView]];
 }
 
 - (IBAction) sliderChanged:(id)sender {

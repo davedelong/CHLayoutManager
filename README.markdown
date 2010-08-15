@@ -24,6 +24,14 @@ In order to use CHLayoutManager in your app, copy these 7 files into your projec
 
 Then `#import "CHLayout.h"` in any .m file that needs to apply constraints to views.
 
+##Improvements over `CAConstraint`
+
+- `CHLayoutConstraints` support all the features of `CAConstraints`
+- `CHLayoutConstraints` allow you to specify an `NSValueTransformer` in order to do more complex transformations.
+- `CHLayoutConstraints` allow you to specify a block in order to do more complex transformations.
+
+(The included sample application shows how to use a `CHLayoutTransformer` block in order to apply constraints that are not possible via the normal mechanism.)
+
 ##Supported Platforms
 
 - Mac OS X 10.5+
@@ -33,14 +41,7 @@ Then `#import "CHLayout.h"` in any .m file that needs to apply constraints to vi
 - It's possible to set up circular dependencies on constraints.  Do so at your own risk.
 - In order to constrain a view to its superview, create a constraint with the `sourceName` of `@"superview"`.
 - It's very easy to create a [retain cycle][retain-cycle] if you use a block transformer that references `self` in a constraint, and then have `self` retain the constraint.  ([Blocks retain objects that they capture][block-retain])
-
-##Improvements over `CAConstraint` objects
-
-- `CHLayoutConstraints` support all the features of `CAConstraints`
-- `CHLayoutConstraints` allow you to specify an `NSValueTransformer` in order to do more complex transformations.
-- `CHLayoutConstraints` allow you to specify a block in order to do more complex transformations.
-
-(The included sample application shows how to use a `CHLayoutTransformer` block in order to apply constraints that are not possible via the normal mechanism.)
+- You may add as many constraints to a view as you like.  If a view has multiple constraints on the same attributed, they will all be evaluated in the order they were added.  Beware.
 
 ##License
 

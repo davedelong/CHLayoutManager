@@ -35,6 +35,8 @@
 	
 	IBOutlet NSButton * leftVerticalButton;
 	IBOutlet NSButton * rightVerticalButton;
+	
+	IBOutlet NSButton * helpButton;
 }
 
 @property (assign) IBOutlet NSWindow *window;
