@@ -32,6 +32,7 @@ Then `#import "CHLayout.h"` in any .m file that needs to apply constraints to vi
 
 - It's possible to set up circular dependencies on constraints.  Do so at your own risk.
 - In order to constrain a view to its superview, create a constraint with the `sourceName` of `@"superview"`.
+- It's very easy to create a [retain cycle][retain-cycle] if you use a block transformer that references `self` in a constraint, and then have `self` retain the constraint.  ([Blocks retain objects that they capture][block-retain])
 
 ##Improvements over `CAConstraint` objects
 
@@ -40,10 +41,6 @@ Then `#import "CHLayout.h"` in any .m file that needs to apply constraints to vi
 - `CHLayoutConstraints` allow you to specify a block in order to do more complex transformations.
 
 (The included sample application shows how to use a `CHLayoutTransformer` block in order to apply constraints that are not possible via the normal mechanism.)
-
-###Caution
-
-Since blocks capture their environment, it's very easy to create a [retain cycle][retain-cycle].  If you create a block transformer that references `self` and then create a `CHLayoutConstraint` with it, and then have `self` retain the constraint, you will have created a retain cycle.  FYI.
 
 ##License
 
@@ -71,3 +68,4 @@ CHLayoutManager is licensed under the MIT license, which is reproduced in its en
 
 
   [retain-cycle]: http://developer.apple.com/mac/library/documentation/Cocoa/Conceptual/MemoryMgmt/Articles/mmObjectOwnership.html#//apple_ref/doc/uid/20000043-1000810
+  [block-retain]: http://developer.apple.com/mac/library/documentation/Cocoa/Conceptual/Blocks/Articles/bxVariables.html#//apple_ref/doc/uid/TP40007502-CH6-SW4
