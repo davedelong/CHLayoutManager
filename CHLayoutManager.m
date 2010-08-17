@@ -141,15 +141,18 @@ static void destroy_layoutManagerSingleton() {
 	 **/
 	
 	//siblings constrained to this view
-	NSArray * superSubviews = [[aView superview] subviews];
-	for (NSView * subview in superSubviews) {
-		if (subview == aView) { continue; }
-		
-		NSArray * subviewConstraints = [self constraintsOnView:subview];
-		for (CHLayoutConstraint * subviewConstraint in subviewConstraints) {
-			NSView * sourceView = [subview relativeViewForName:[subviewConstraint sourceName]];
-			if (sourceView == aView) {
-				[subviewConstraint applyToTargetView:subview sourceView:sourceView];
+	//(if this view doesn't have a name, then a sibling can't be constrained to it)
+	if ([self layoutNameForView:aView] != nil) {
+		NSArray * superSubviews = [[aView superview] subviews];
+		for (NSView * subview in superSubviews) {
+			if (subview == aView) { continue; }
+			
+			NSArray * subviewConstraints = [self constraintsOnView:subview];
+			for (CHLayoutConstraint * subviewConstraint in subviewConstraints) {
+				NSView * sourceView = [subview relativeViewForName:[subviewConstraint sourceName]];
+				if (sourceView == aView) {
+					[subviewConstraint applyToTargetView:subview sourceView:sourceView];
+				}
 			}
 		}
 	}
