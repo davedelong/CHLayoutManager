@@ -85,7 +85,7 @@
 			frame.origin.x = newValue;
 			break;
 		case CHLayoutConstraintAttributeMaxX:
-			frame.origin.x = newValue - frame.size.height;
+			frame.origin.x = newValue - frame.size.width;
 			break;
 		case CHLayoutConstraintAttributeWidth:
 			frame.size.width = newValue;
