@@ -173,6 +173,8 @@ static void destroy_layoutManagerSingleton() {
 - (void) beginProcessingView:(NSView *)view {
 	if (isProcessingChanges == NO) {
 		isProcessingChanges = YES;
+		
+		NSAutoreleasePool * viewPool = [[NSAutoreleasePool alloc] init];
 		[viewsToProcess removeAllObjects];
 		[processedViews removeAllObjects];
 		[viewsToProcess addObject:view];
@@ -186,6 +188,7 @@ static void destroy_layoutManagerSingleton() {
 			[currentView release];
 		}
 		
+		[viewPool drain];
 		isProcessingChanges = NO;
 	} else {
 		if ([processedViews containsObject:view] == NO) {

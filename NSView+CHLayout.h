@@ -35,8 +35,8 @@
 - (NSArray *) constraints;
 - (void) removeAllConstraints;
 
-- (CGFloat) valueForLayoutAttribute:(CHLayoutConstraintAttribute)attribute;
-- (void) setValue:(CGFloat)newValue forLayoutAttribute:(CHLayoutConstraintAttribute)attribute;
+- (NSRect) valueForLayoutAttribute:(CHLayoutConstraintAttribute)attribute;
+- (void) setValue:(NSRect)newValue forLayoutAttribute:(CHLayoutConstraintAttribute)attribute;
 
 - (NSView *) relativeViewForName:(NSString *)name;
 

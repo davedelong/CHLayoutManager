@@ -40,11 +40,13 @@
 	[button2 addConstraint:[CHLayoutConstraint constraintWithAttribute:CHLayoutConstraintAttributeMaxY relativeTo:@"button1" attribute:CHLayoutConstraintAttributeMaxY]];
 	[button2 addConstraint:[CHLayoutConstraint constraintWithAttribute:CHLayoutConstraintAttributeWidth relativeTo:@"button1" attribute:CHLayoutConstraintAttributeWidth]];
 	
-//	[progress startAnimation:nil];
+	[progress startAnimation:nil];
 	CHLayoutConstraint * centerHorizontal = [CHLayoutConstraint constraintWithAttribute:CHLayoutConstraintAttributeMidX relativeTo:@"superview" attribute:CHLayoutConstraintAttributeMidX];
 	CHLayoutConstraint * centerVertical = [CHLayoutConstraint constraintWithAttribute:CHLayoutConstraintAttributeMidY relativeTo:@"superview" attribute:CHLayoutConstraintAttributeMidY];
 	[progress addConstraint:centerHorizontal];
 	[progress addConstraint:centerVertical];
+	
+	[progress addConstraint:[CHLayoutConstraint constraintWithAttribute:CHLayoutConstraintAttributeMidXMidY relativeTo:@"superview" attribute:CHLayoutConstraintAttributeBoundsCenter]];
 	
 	
 	[leftVerticalButton setLayoutName:@"leftVertical"];
@@ -62,11 +64,14 @@
 	
 #endif
 	
-	[helpButton addConstraint:[CHLayoutConstraint constraintWithAttribute:CHLayoutConstraintAttributeMinX relativeTo:@"leftVertical" attribute:CHLayoutConstraintAttributeMinY scale:2.0 offset:0.0]];
+//	[helpButton addConstraint:[CHLayoutConstraint constraintWithAttribute:CHLayoutConstraintAttributeMinX relativeTo:@"leftVertical" attribute:CHLayoutConstraintAttributeMinY scale:2.0 offset:0.0]];
+	[helpButton addConstraint:[CHLayoutConstraint constraintWithAttribute:CHLayoutConstraintAttributeMidXMidY relativeTo:@"button1" attribute:CHLayoutConstraintAttributeBoundsCenter]];
 	
 	SinTransformer * sinTransformer = [[SinTransformer alloc] init];
-	[helpButton addConstraint:[CHLayoutConstraint constraintWithAttribute:CHLayoutConstraintAttributeMinY relativeTo:@"button1" attribute:CHLayoutConstraintAttributeMinY valueTransformer:sinTransformer]];
+//	[helpButton addConstraint:[CHLayoutConstraint constraintWithAttribute:CHLayoutConstraintAttributeMinY relativeTo:@"button1" attribute:CHLayoutConstraintAttributeMinY valueTransformer:sinTransformer]];
 	[sinTransformer release];
+	
+//	[helpButton addConstraint:[CHLayoutConstraint constraintWithAttribute:CHLayoutConstraintAttributeCenter relativeTo:@"superview" attribute:CHLayoutConstraintAttributeFrame]];
 	
 	[self sliderChanged:nil];
 //	[[CHLayoutManager sharedLayoutManager] beginProcessingView:[window contentView]];

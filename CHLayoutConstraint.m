@@ -136,9 +136,22 @@
 }
 
 - (id)initWithAttribute:(CHLayoutConstraintAttribute)attr relativeTo:(NSString *)srcLayer attribute:(CHLayoutConstraintAttribute)srcAttr valueTransformer:(NSValueTransformer *)transformer {
+	double attributeRange = floorf(log10(attr));
+	double sourceAttributeRange = floorf(log10(srcAttr));
+	
+	NSLog(@"attr: %f", attributeRange);
+	NSLog(@"src: %f", sourceAttributeRange);
+	
+	if (attributeRange != sourceAttributeRange) {
+		[super dealloc];
+		[NSException raise:NSInvalidArgumentException format:@"Invalid source and target attributes"];
+		return nil;
+	}
+	
 	if (self = [super init]) {
 		attribute = attr;
 		sourceAttribute = srcAttr;
+				
 		sourceName = [srcLayer copy];
 		valueTransformer = [transformer retain];
 	}
@@ -167,8 +180,12 @@
 	if (source == nil) { return; }
 	if ([self sourceAttribute] == 0) { return; }
 	
-	CGFloat sourceValue = [source valueForLayoutAttribute:[self sourceAttribute]];
-	CGFloat targetValue = [self transformValue:sourceValue];
+	NSRect sourceValue = [source valueForLayoutAttribute:[self sourceAttribute]];
+	
+	NSRect targetValue = sourceValue;
+	if (attribute >= CHLayoutConstraintAttributeMinY && attribute <= CHLayoutConstraintAttributeMidX) {
+		targetValue.origin.x = [self transformValue:sourceValue.origin.x];
+	}
 	
 	[target setValue:targetValue forLayoutAttribute:[self attribute]];
 }

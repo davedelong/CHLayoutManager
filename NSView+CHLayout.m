@@ -26,6 +26,19 @@
 #import "NSView+CHLayout.h"
 #import "CHLayoutManager.h"
 
+#define CHScalarRect(_s) (NSMakeRect((_s), 0, 0, 0))
+#define CHPointRect(_x,_y) (NSMakeRect((_x), (_y), 0, 0))
+
+#define CHRectScalar(_r) ((_r).origin.x)
+#define CHRectPoint(_r) ((_r).origin)
+
+#define CHSetMinX(_r,_v) ((_r).origin.x = (_v))
+#define CHSetMinY(_r,_v) ((_r).origin.y = (_v))
+#define CHSetMidX(_r,_v) ((_r).origin.x = (_v) - ((_r).size.width/2))
+#define CHSetMidY(_r,_v) ((_r).origin.y = (_v) - ((_r).size.height/2))
+#define CHSetMaxX(_r,_v) ((_r).origin.x = (_v) - (_r).size.width)
+#define CHSetMaxY(_r,_v) ((_r).origin.y = (_v) - (_r).size.height)
+
 @implementation NSView (CHLayout)
 
 - (void) setLayoutName:(NSString *)newLayoutName {
@@ -48,59 +61,141 @@
 	[[CHLayoutManager sharedLayoutManager] removeConstraintsFromView:self];
 }
 
-- (CGFloat) valueForLayoutAttribute:(CHLayoutConstraintAttribute)attribute {
+- (NSRect) valueForLayoutAttribute:(CHLayoutConstraintAttribute)attribute {
 	NSRect frame = [self frame];
+	NSRect bounds = [self bounds];
 	switch (attribute) {
 		case CHLayoutConstraintAttributeMinY:
-			return NSMinY(frame);
+			return CHScalarRect(NSMinY(frame));
 		case CHLayoutConstraintAttributeMaxY:
-			return NSMaxY(frame);
+			return CHScalarRect(NSMaxY(frame));
 		case CHLayoutConstraintAttributeMinX:
-			return NSMinX(frame);
+			return CHScalarRect(NSMinX(frame));
 		case CHLayoutConstraintAttributeMaxX:
-			return NSMaxX(frame);
+			return CHScalarRect(NSMaxX(frame));
 		case CHLayoutConstraintAttributeWidth:
-			return NSWidth(frame);
+			return CHScalarRect(NSWidth(frame));
 		case CHLayoutConstraintAttributeHeight:
-			return NSHeight(frame);
+			return CHScalarRect(NSHeight(frame));
 		case CHLayoutConstraintAttributeMidY:
-			return NSMidY(frame);
+			return CHScalarRect(NSMidY(frame));
 		case CHLayoutConstraintAttributeMidX:
-			return NSMidX(frame);
+			return CHScalarRect(NSMidX(frame));
+		case CHLayoutConstraintAttributeMinXMinY:
+			return CHPointRect(NSMinX(frame), NSMinY(frame));
+		case CHLayoutConstraintAttributeMinXMidY:
+			return CHPointRect(NSMinX(frame), NSMidY(frame));
+		case CHLayoutConstraintAttributeMinXMaxY:
+			return CHPointRect(NSMinX(frame), NSMaxY(frame));
+		case CHLayoutConstraintAttributeMidXMinY:
+			return CHPointRect(NSMidX(frame), NSMinY(frame));
+		case CHLayoutConstraintAttributeMidXMidY:
+			return CHPointRect(NSMidX(frame), NSMidY(frame));
+		case CHLayoutConstraintAttributeMidXMaxY:
+			return CHPointRect(NSMidX(frame), NSMaxY(frame));
+		case CHLayoutConstraintAttributeMaxXMinY:
+			return CHPointRect(NSMaxX(frame), NSMinY(frame));
+		case CHLayoutConstraintAttributeMaxXMidY:
+			return CHPointRect(NSMaxX(frame), NSMidY(frame));
+		case CHLayoutConstraintAttributeMaxXMaxY:
+			return CHPointRect(NSMaxX(frame), NSMaxY(frame));
+		case CHLayoutConstraintAttributeBoundsCenter:
+			return CHPointRect(NSMidX(bounds), NSMidY(bounds));
+		case CHLayoutConstraintAttributeFrame:
+			return frame;
+		case CHLayoutConstraintAttributeBounds:
+			return bounds;
 		default:
-			return 0;
+			return NSZeroRect;
 	}
 }
 
-- (void) setValue:(CGFloat)newValue forLayoutAttribute:(CHLayoutConstraintAttribute)attribute {
+- (void) setValue:(NSRect)newValue forLayoutAttribute:(CHLayoutConstraintAttribute)attribute {
 	NSRect frame = [self frame];
+	NSRect bounds = [self bounds];
+	
+	CGFloat scalarValue = CHRectScalar(newValue);
+	NSPoint pointValue = CHRectPoint(newValue);
+	NSRect rectValue = newValue;
+	
 	switch (attribute) {
 		case CHLayoutConstraintAttributeMinY:
-			frame.origin.y = newValue;
+			CHSetMinY(frame, scalarValue);
 			break;
 		case CHLayoutConstraintAttributeMaxY:
-			frame.origin.y = newValue - frame.size.height;
+			CHSetMaxY(frame, scalarValue);
 			break;
 		case CHLayoutConstraintAttributeMinX:
-			frame.origin.x = newValue;
+			CHSetMinX(frame, scalarValue);
 			break;
 		case CHLayoutConstraintAttributeMaxX:
-			frame.origin.x = newValue - frame.size.width;
+			CHSetMaxX(frame, scalarValue);
 			break;
 		case CHLayoutConstraintAttributeWidth:
-			frame.size.width = newValue;
+			frame.size.width = scalarValue;
 			break;
 		case CHLayoutConstraintAttributeHeight:
-			frame.size.height = newValue;
+			frame.size.height = scalarValue;
 			break;
 		case CHLayoutConstraintAttributeMidY:
-			frame.origin.y = newValue - (frame.size.height/2);
+			CHSetMidY(frame, scalarValue);
 			break;
 		case CHLayoutConstraintAttributeMidX:
-			frame.origin.x = newValue - (frame.size.width/2);
+			CHSetMidX(frame, scalarValue);
+			break;
+		case CHLayoutConstraintAttributeMinXMinY:
+			CHSetMinX(frame, pointValue.x);
+			CHSetMinY(frame, pointValue.y);
+			break;
+		case CHLayoutConstraintAttributeMinXMidY:
+			CHSetMinX(frame, pointValue.x);
+			CHSetMidY(frame, pointValue.y);
+			break;
+		case CHLayoutConstraintAttributeMinXMaxY:
+			CHSetMinX(frame, pointValue.x);
+			CHSetMaxY(frame, pointValue.y);
+			break;
+		case CHLayoutConstraintAttributeMidXMinY:
+			CHSetMidX(frame, pointValue.x);
+			CHSetMinY(frame, pointValue.y);
+			break;
+		case CHLayoutConstraintAttributeMidXMidY:
+			CHSetMidX(frame, pointValue.x);
+			CHSetMidY(frame, pointValue.y);
+			break;
+		case CHLayoutConstraintAttributeBoundsCenter:
+			CHSetMidX(bounds, pointValue.x);
+			CHSetMidY(bounds, pointValue.y);
+			break;
+		case CHLayoutConstraintAttributeMidXMaxY:
+			CHSetMidX(frame, pointValue.x);
+			CHSetMaxY(frame, pointValue.y);
+			break;
+		case CHLayoutConstraintAttributeMaxXMinY:
+			CHSetMaxX(frame, pointValue.x);
+			CHSetMinY(frame, pointValue.y);
+			break;
+		case CHLayoutConstraintAttributeMaxXMidY:
+			CHSetMaxX(frame, pointValue.x);
+			CHSetMidY(frame, pointValue.y);
+			break;
+		case CHLayoutConstraintAttributeMaxXMaxY:
+			CHSetMaxX(frame, pointValue.x);
+			CHSetMaxY(frame, pointValue.y);
+			break;
+		case CHLayoutConstraintAttributeFrame:
+			frame = rectValue;
+			break;
+		case CHLayoutConstraintAttributeBounds:
+			bounds = rectValue;
 			break;
 	}
-	[self setFrame:frame];
+	
+	if (attribute != CHLayoutConstraintAttributeBounds && attribute != CHLayoutConstraintAttributeBoundsCenter) {
+		[self setFrame:frame];
+	} else {
+		[self setBounds:bounds];
+	}
 }
 
 - (NSView *) relativeViewForName:(NSString *)name {

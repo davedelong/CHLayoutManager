@@ -33,7 +33,24 @@ typedef enum {
 	CHLayoutConstraintAttributeWidth = 5, //the width
 	CHLayoutConstraintAttributeHeight = 6, //the height
 	CHLayoutConstraintAttributeMidY = 7, //the vertical center
-	CHLayoutConstraintAttributeMidX = 8 //the horizontal center
+	CHLayoutConstraintAttributeMidX = 8, //the horizontal center
+	
+	CHLayoutConstraintAttributeMinXMinY = 101,
+	CHLayoutConstraintAttributeMinXMidY = 102,
+	CHLayoutConstraintAttributeMinXMaxY = 103,
+	
+	CHLayoutConstraintAttributeMidXMinY = 104,
+	CHLayoutConstraintAttributeMidXMidY = 105,
+	CHLayoutConstraintAttributeMidXMaxY = 106,
+	
+	CHLayoutConstraintAttributeMaxXMinY = 107,
+	CHLayoutConstraintAttributeMaxXMidY = 108,
+	CHLayoutConstraintAttributeMaxXMaxY = 109,
+	
+	CHLayoutConstraintAttributeBoundsCenter = 110,
+	
+	CHLayoutConstraintAttributeFrame = 1000,
+	CHLayoutConstraintAttributeBounds = 1001
 } CHLayoutConstraintAttribute;
 
 #if NS_BLOCKS_AVAILABLE

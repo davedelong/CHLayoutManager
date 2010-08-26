@@ -29,6 +29,7 @@ Then `#import "CHLayout.h"` in any .m file that needs to apply constraints to vi
 - `CHLayoutConstraints` support all the features of `CAConstraints`
 - `CHLayoutConstraints` allow you to specify an `NSValueTransformer` in order to do more complex transformations.
 - `CHLayoutConstraints` allow you to specify a block in order to do more complex transformations.
+- `CHLayoutConstraints` allow you to bind point and rect values, in addition to scalar values.
 
 (The included sample application shows how to use a `CHLayoutTransformer` block in order to apply constraints that are not possible via the normal mechanism.)
 
@@ -43,6 +44,8 @@ Then `#import "CHLayout.h"` in any .m file that needs to apply constraints to vi
 - It's very easy to create a [retain cycle][retain-cycle] if you use a block transformer that references `self` in a constraint, and then have `self` retain the constraint.  ([Blocks retain objects that they capture][block-retain])
 - You may add as many constraints to a view as you like.  If a view has multiple constraints on the same attributed, they will all be evaluated in the order they were added.  Beware.
 - If you are manually managing your memory (ie, not using garbage collection), then it is recommend that you use `[myView removeAllConstraints]` before the view is deallocated.  Doing so will ensure that all constraints and value transformers associated with that view are properly cleaned up.  If you are using garbage collection, these will be cleaned up for you.
+- Transformations (scale+offset, `NSValueTransformer`, and blocks-based) are only applied to scalar attributes.  They are not applied to point- or rect-based attributes.
+- You cannot constrain an attribute to another attribute of a different type.  In other words, you must constrain a scalar to a scalar, a point to a point, and a rect to a rect.
 
 ##License
 
