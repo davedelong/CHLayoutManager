@@ -139,9 +139,6 @@
 	double attributeRange = floorf(log10(attr));
 	double sourceAttributeRange = floorf(log10(srcAttr));
 	
-	NSLog(@"attr: %f", attributeRange);
-	NSLog(@"src: %f", sourceAttributeRange);
-	
 	if (attributeRange != sourceAttributeRange) {
 		[super dealloc];
 		[NSException raise:NSInvalidArgumentException format:@"Invalid source and target attributes"];
