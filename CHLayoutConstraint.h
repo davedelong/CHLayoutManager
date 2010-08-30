@@ -66,8 +66,6 @@ typedef CGFloat (^CHLayoutTransformer)(CGFloat);
 	NSValueTransformer * valueTransformer;
 }
 
-@property (readonly) CGFloat offset;
-@property (readonly) CGFloat scale;
 @property (readonly) CHLayoutConstraintAttribute attribute;
 @property (readonly) CHLayoutConstraintAttribute sourceAttribute;
 @property (readonly) NSString * sourceName;

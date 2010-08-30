@@ -107,7 +107,7 @@
 #pragma mark CHLayoutConstraint
 
 @implementation CHLayoutConstraint
-@synthesize offset, scale, attribute, sourceAttribute, sourceName;
+@synthesize attribute, sourceAttribute, sourceName;
 
 #pragma mark Basic Initializers
 
