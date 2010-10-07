@@ -116,10 +116,16 @@ static void destroy_layoutManagerSingleton() {
 }
 
 - (void) dealloc {
+	[self removeAllConstraints];
+	
 	[viewsToProcess release];
 	[processedViews release];
 	[constraints release];
 	[super dealloc];
+}
+
+- (void) removeAllConstraints {
+	[constraints removeAllObjects];
 }
 
 - (void) processView:(NSView *)aView {
@@ -204,18 +210,64 @@ static void destroy_layoutManagerSingleton() {
 
 #pragma mark -
 
+- (void) dynamicDealloc {
+	[[CHLayoutManager sharedLayoutManager] removeConstraintsFromView:(NSView *)self];
+	[[CHLayoutManager sharedLayoutManager] setLayoutName:nil forView:(NSView *)self];
+	[super dealloc];
+}
+
+- (void) dynamicallySubclassView:(NSView *)view {
+	Class viewClass = [view class];
+	NSString * className = NSStringFromClass(viewClass);
+	NSString * subclassName = [NSString stringWithFormat:@"%@_CHLayout", className];
+	Class subclass = NSClassFromString(subclassName);
+	
+	if (subclass == nil) {
+		subclass = objc_allocateClassPair(viewClass, [subclassName UTF8String], 0);
+		if (subclass != nil) {
+			IMP dealloc = class_getMethodImplementation([self class], @selector(dynamicDealloc));
+			
+			class_addMethod(subclass, @selector(dealloc), dealloc, "v@:");
+			objc_registerClassPair(subclass);
+		}
+	}
+	
+	if (subclass != nil) {
+		object_setClass(view, subclass);
+	}
+}
+		
+- (void) restoreSuperclassOfView:(NSView *)view {
+	Class viewClass = [view class];
+	Class superClass = class_getSuperclass(viewClass);
+	object_setClass(view, superClass);
+}
+
 - (void) addConstraint:(CHLayoutConstraint *)constraint toView:(NSView *)view {
 	CHLayoutContainer * viewContainer = [constraints objectForKey:view];
 	if (viewContainer == nil) {
 		viewContainer = [CHLayoutContainer container];
 		[constraints setObject:viewContainer forKey:view];
 	}
+	
+	if ([[viewContainer constraints] count] == 0) {
+		[self dynamicallySubclassView:view];
+	}
+	
 	[[viewContainer constraints] addObject:constraint];
 	[self beginProcessingView:view];
 }
 
 - (void) removeConstraintsFromView:(NSView *)view {
-	[constraints removeObjectForKey:view];
+	CHLayoutContainer * viewContainer = [constraints objectForKey:view];
+	if ([[viewContainer constraints] count] > 0) {
+		[self restoreSuperclassOfView:view];
+	}
+	[[viewContainer constraints] removeAllObjects];
+	
+	if ([[viewContainer constraints] count] == 0 && [viewContainer layoutName] == nil) {
+		[constraints removeObjectForKey:view];
+	}
 }
 
 - (NSArray *) constraintsOnView:(NSView *)view {
@@ -231,11 +283,16 @@ static void destroy_layoutManagerSingleton() {
 
 - (void) setLayoutName:(NSString *)name forView:(NSView *)view {
 	CHLayoutContainer * viewContainer = [constraints objectForKey:view];
-	if (viewContainer == nil) {
-		viewContainer = [CHLayoutContainer container];
-		[constraints setObject:viewContainer forKey:view];
+	
+	if (name == nil && [[viewContainer constraints] count] == 0) {
+		[constraints removeObjectForKey:view];
+	} else {
+		if (viewContainer == nil) {
+			viewContainer = [CHLayoutContainer container];
+			[constraints setObject:viewContainer forKey:view];
+		}
+		[viewContainer setLayoutName:name];
 	}
-	[viewContainer setLayoutName:name];
 }
 
 @end

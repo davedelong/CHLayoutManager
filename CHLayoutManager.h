@@ -38,6 +38,8 @@
 
 + (id) sharedLayoutManager;
 
+- (void) removeAllConstraints;
+
 - (void) addConstraint:(CHLayoutConstraint *)constraint toView:(NSView *)view;
 - (void) removeConstraintsFromView:(NSView *)view;
 - (NSArray *) constraintsOnView:(NSView *)view;
