@@ -217,9 +217,12 @@ static void destroy_layoutManagerSingleton() {
 }
 
 - (void) dynamicallySubclassView:(NSView *)view {
+	const char * prefix = "CHLayoutAutoremove_";
 	Class viewClass = [view class];
 	NSString * className = NSStringFromClass(viewClass);
-	NSString * subclassName = [NSString stringWithFormat:@"%@_CHLayout", className];
+	if (strncmp(prefix, [className UTF8String], strlen(prefix)) == 0) { return; }
+	
+	NSString * subclassName = [NSString stringWithFormat:@"%s%@", prefix, className];
 	Class subclass = NSClassFromString(subclassName);
 	
 	if (subclass == nil) {
@@ -236,12 +239,6 @@ static void destroy_layoutManagerSingleton() {
 		object_setClass(view, subclass);
 	}
 }
-		
-- (void) restoreSuperclassOfView:(NSView *)view {
-	Class viewClass = [view class];
-	Class superClass = class_getSuperclass(viewClass);
-	object_setClass(view, superClass);
-}
 
 - (void) addConstraint:(CHLayoutConstraint *)constraint toView:(NSView *)view {
 	CHLayoutContainer * viewContainer = [constraints objectForKey:view];
@@ -250,9 +247,7 @@ static void destroy_layoutManagerSingleton() {
 		[constraints setObject:viewContainer forKey:view];
 	}
 	
-	if ([[viewContainer constraints] count] == 0) {
-		[self dynamicallySubclassView:view];
-	}
+	[self dynamicallySubclassView:view];
 	
 	[[viewContainer constraints] addObject:constraint];
 	[self beginProcessingView:view];
@@ -260,9 +255,6 @@ static void destroy_layoutManagerSingleton() {
 
 - (void) removeConstraintsFromView:(NSView *)view {
 	CHLayoutContainer * viewContainer = [constraints objectForKey:view];
-	if ([[viewContainer constraints] count] > 0) {
-		[self restoreSuperclassOfView:view];
-	}
 	[[viewContainer constraints] removeAllObjects];
 	
 	if ([[viewContainer constraints] count] == 0 && [viewContainer layoutName] == nil) {
@@ -291,6 +283,7 @@ static void destroy_layoutManagerSingleton() {
 			viewContainer = [CHLayoutContainer container];
 			[constraints setObject:viewContainer forKey:view];
 		}
+		[self dynamicallySubclassView:view];
 		[viewContainer setLayoutName:name];
 	}
 }
