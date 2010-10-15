@@ -210,33 +210,61 @@ static void destroy_layoutManagerSingleton() {
 
 #pragma mark -
 
-- (void) dynamicDealloc {
-	[[CHLayoutManager sharedLayoutManager] removeConstraintsFromView:(NSView *)self];
-	[[CHLayoutManager sharedLayoutManager] setLayoutName:nil forView:(NSView *)self];
-	[super dealloc];
+/** 
+ 
+ WHAT THE HECK IS GOING ON HERE:
+ 
+ OK, so it turns out that NSKVONotifying_ objects (ie, objects with KV observers) *really* do not like being subclassed.
+ Doing so will play silly buggers with your code and perhaps end up crashing (which is what was observed).
+ 
+ So instead of dynamically subclassing the view (which was beautiful code *sniff*), we swizzle out the dealloc method.
+ 
+ Here's what's going on:
+ 
+ We have two selectors and two IMPs.  Originally, things are set up like this:
+ 
+ @selector(dealloc) => originalDeallocIMP
+ 
+ Then we add the new dealloc method to the class (if it does not exist), so we now have:
+ 
+ @selector(dealloc) => originalDeallocIMP
+ @selector(chlayoutautoremove_dynamicDealloc) => dynamicDeallocIMP
+ 
+ However, we want our custom dealloc method to get invoked first, so we swap their implementations, giving us:
+ 
+ @selector(dealloc) => dynamicDeallocIMP
+ @selector(chlayoutautoremove_dynamicDealloc) => originalDeallocIMP
+ 
+ Now when the view gets deallocated, it's going to invoke the dynamic dealloc code (which cleans up layout information),
+ and then invokes the original dealloc method, which does whatever it does, and also calls [super dealloc],
+ and all is (hopefully) well in the world.
+ 
+ **/
+
+- (void) chlayoutautoremove_dynamicDealloc {
+	if ([self isKindOfClass:[NSView class]]) { //to prevent people from being stupid
+		[[CHLayoutManager sharedLayoutManager] removeConstraintsFromView:(NSView *)self];
+		[[CHLayoutManager sharedLayoutManager] setLayoutName:nil forView:(NSView *)self];
+		//THIS IS NOT A RECURSIVE CALL
+		//see the big comment above for why
+		[self chlayoutautoremove_dynamicDealloc];
+	}
 }
 
-- (void) dynamicallySubclassView:(NSView *)view {
-	const char * prefix = "CHLayoutAutoremove_";
-	Class viewClass = [view class];
-	NSString * className = NSStringFromClass(viewClass);
-	if (strncmp(prefix, [className UTF8String], strlen(prefix)) == 0) { return; }
+- (void) dynamicallySwizzleDealloc:(NSView *)view {
+	Class viewClass = object_getClass(view);
 	
-	NSString * subclassName = [NSString stringWithFormat:@"%s%@", prefix, className];
-	Class subclass = NSClassFromString(subclassName);
+	SEL dynamicDealloc = @selector(chlayoutautoremove_dynamicDealloc);
 	
-	if (subclass == nil) {
-		subclass = objc_allocateClassPair(viewClass, [subclassName UTF8String], 0);
-		if (subclass != nil) {
-			IMP dealloc = class_getMethodImplementation([self class], @selector(dynamicDealloc));
-			
-			class_addMethod(subclass, @selector(dealloc), dealloc, "v@:");
-			objc_registerClassPair(subclass);
-		}
-	}
-	
-	if (subclass != nil) {
-		object_setClass(view, subclass);
+	Method dynamicDeallocMethod = class_getInstanceMethod(viewClass, dynamicDealloc);
+	if (dynamicDeallocMethod == NULL) {
+		//we need to add this method to the class
+		Method originalDeallocMethod = class_getInstanceMethod(viewClass, @selector(dealloc));
+		
+		class_addMethod(viewClass, dynamicDealloc, class_getMethodImplementation([self class], dynamicDealloc), "v@:");
+		
+		dynamicDeallocMethod = class_getInstanceMethod(viewClass, dynamicDealloc);
+		method_exchangeImplementations(dynamicDeallocMethod, originalDeallocMethod);
 	}
 }
 
@@ -247,7 +275,7 @@ static void destroy_layoutManagerSingleton() {
 		[constraints setObject:viewContainer forKey:view];
 	}
 	
-	[self dynamicallySubclassView:view];
+	[self dynamicallySwizzleDealloc:view];
 	
 	[[viewContainer constraints] addObject:constraint];
 	[self beginProcessingView:view];
@@ -283,7 +311,7 @@ static void destroy_layoutManagerSingleton() {
 			viewContainer = [CHLayoutContainer container];
 			[constraints setObject:viewContainer forKey:view];
 		}
-		[self dynamicallySubclassView:view];
+		[self dynamicallySwizzleDealloc:view];
 		[viewContainer setLayoutName:name];
 	}
 }
