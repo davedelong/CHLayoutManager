@@ -84,6 +84,25 @@ static void destroy_layoutManagerSingleton() {
 
 @implementation CHLayoutManager
 
++ (void) initialize {
+	if (self == [CHLayoutManager class]) {
+		Class nsview = [NSView class];
+		
+		SEL dynamicDealloc = @selector(chlayoutautoremove_dynamicDealloc);
+		
+		Method newDealloc = class_getInstanceMethod(self, dynamicDealloc);
+		if (newDealloc != NULL) {
+			class_addMethod(nsview, dynamicDealloc, method_getImplementation(newDealloc), method_getTypeEncoding(newDealloc));
+			newDealloc = class_getInstanceMethod(nsview, dynamicDealloc);
+			
+			if (newDealloc != NULL) {
+				Method originalDealloc = class_getInstanceMethod(nsview, @selector(dealloc));
+				method_exchangeImplementations(originalDealloc, newDealloc);
+			}
+		}
+	}
+}
+
 + (id) sharedLayoutManager {
 	return _sharedLayoutManager;
 }
@@ -251,31 +270,12 @@ static void destroy_layoutManagerSingleton() {
 	}
 }
 
-- (void) dynamicallySwizzleDealloc:(NSView *)view {
-	Class viewClass = object_getClass(view);
-	
-	SEL dynamicDealloc = @selector(chlayoutautoremove_dynamicDealloc);
-	
-	Method dynamicDeallocMethod = class_getInstanceMethod(viewClass, dynamicDealloc);
-	if (dynamicDeallocMethod == NULL) {
-		//we need to add this method to the class
-		Method originalDeallocMethod = class_getInstanceMethod(viewClass, @selector(dealloc));
-		
-		class_addMethod(viewClass, dynamicDealloc, class_getMethodImplementation([self class], dynamicDealloc), "v@:");
-		
-		dynamicDeallocMethod = class_getInstanceMethod(viewClass, dynamicDealloc);
-		method_exchangeImplementations(dynamicDeallocMethod, originalDeallocMethod);
-	}
-}
-
 - (void) addConstraint:(CHLayoutConstraint *)constraint toView:(NSView *)view {
 	CHLayoutContainer * viewContainer = [constraints objectForKey:view];
 	if (viewContainer == nil) {
 		viewContainer = [CHLayoutContainer container];
 		[constraints setObject:viewContainer forKey:view];
 	}
-	
-	[self dynamicallySwizzleDealloc:view];
 	
 	[[viewContainer constraints] addObject:constraint];
 	[self beginProcessingView:view];
@@ -311,7 +311,6 @@ static void destroy_layoutManagerSingleton() {
 			viewContainer = [CHLayoutContainer container];
 			[constraints setObject:viewContainer forKey:view];
 		}
-		[self dynamicallySwizzleDealloc:view];
 		[viewContainer setLayoutName:name];
 	}
 }
