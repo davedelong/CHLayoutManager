@@ -45,7 +45,8 @@
 }
 
 - (id) initWithOffset:(CGFloat)anOffset scale:(CGFloat)aScale {
-	if (self = [super init]) {
+	self = [super init];
+	if (self) {
 		offset = anOffset;
 		scale = aScale;
 	}
@@ -80,7 +81,8 @@
 }
 
 - (id) initWithBlock:(CHLayoutTransformer)block {
-	if (self = [super init]) {
+	self = [super init];
+	if (self) {
 		transformer = Block_copy(block);
 	}
 	return self;
@@ -145,7 +147,8 @@
 		return nil;
 	}
 	
-	if (self = [super init]) {
+	self = [super init];
+	if (self) {
 		attribute = attr;
 		sourceAttribute = srcAttr;
 				

@@ -47,7 +47,8 @@
 }
 
 - (id) init {
-	if (self = [super init]) {
+	self = [super init];
+	if (self) {
 		constraints = [[NSMutableArray alloc] init];
 	}
 	return self;
@@ -117,7 +118,8 @@ static void destroy_layoutManagerSingleton() {
 
 - (id) init {
 	if (!_sharedLayoutManager) {
-		if (self = [super init]) {
+		self = [super init];
+		if (self) {
 			//initialization goes here
 			isProcessingChanges = NO;
 			viewsToProcess = [[NSMutableArray alloc] init];
