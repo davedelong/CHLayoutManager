@@ -25,6 +25,18 @@
 
 #import "CHLayout.h"
 
+CGFloat CHLayoutExtractCGFloat(id value) {
+	CGFloat extracted = 0;
+	if ([value respondsToSelector:@selector(CGFloatValue_ch)]) {
+		extracted = [value CGFloatValue_ch];
+	} else if (CGFLOAT_IS_DOUBLE && [value respondsToSelector:@selector(doubleValue)]) {
+		extracted = [value doubleValue];
+	} else if (!CGFLOAT_IS_DOUBLE && [value respondsToSelector:@selector(floatValue)]) {
+		extracted = [value floatValue];
+	}
+	return extracted;
+}
+
 #pragma mark Value Transformers
 
 @interface CHLayoutValueTransformer : NSValueTransformer
@@ -54,11 +66,9 @@
 }
 
 - (id) transformedValue:(id)value {
-	if ([value respondsToSelector:@selector(floatValue)] == NO) { return [NSNumber numberWithInt:0]; }
-	
-	CGFloat source = [value floatValue];
+	CGFloat source = CHLayoutExtractCGFloat(value);	
 	CGFloat transformed = (source * scale) + offset;
-	return [NSNumber numberWithFloat:transformed];
+	return [NSNumber numberWithCGFloat_ch:transformed];
 }
 
 @end
@@ -94,11 +104,9 @@
 }
 
 - (id) transformedValue:(id)value {
-	if ([value respondsToSelector:@selector(floatValue)] == NO) { return [NSNumber numberWithInt:0]; }
-	
-	CGFloat source = [value floatValue];
+	CGFloat source = CHLayoutExtractCGFloat(value);
 	CGFloat transformed = transformer(source);
-	return [NSNumber numberWithFloat:transformed];
+	return [NSNumber numberWithCGFloat_ch:transformed];
 }
 
 @end
@@ -138,8 +146,8 @@
 }
 
 - (id)initWithAttribute:(CHLayoutConstraintAttribute)attr relativeTo:(NSString *)srcLayer attribute:(CHLayoutConstraintAttribute)srcAttr valueTransformer:(NSValueTransformer *)transformer {
-	double attributeRange = floorf(log10(attr));
-	double sourceAttributeRange = floorf(log10(srcAttr));
+	double attributeRange = floor(log10(attr));
+	double sourceAttributeRange = floor(log10(srcAttr));
 	
 	if (attributeRange != sourceAttributeRange) {
 		[super dealloc];
@@ -165,9 +173,8 @@
 }
 
 - (CGFloat) transformValue:(CGFloat)original {
-	id transformed = [valueTransformer transformedValue:[NSNumber numberWithFloat:original]];
-	if ([transformed respondsToSelector:@selector(floatValue)] == NO) { return 0; }
-	return [transformed floatValue];
+	id transformed = [valueTransformer transformedValue:[NSNumber numberWithCGFloat_ch:original]];
+	return CHLayoutExtractCGFloat(transformed);
 }
 
 - (void) applyToTargetView:(NSView *)target {

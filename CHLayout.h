@@ -24,5 +24,6 @@
  **/
 
 #import "NSView+CHLayout.h"
+#import "NSNumber+CHLayout.h"
 #import "CHLayoutManager.h"
 #import "CHLayoutConstraint.h"
