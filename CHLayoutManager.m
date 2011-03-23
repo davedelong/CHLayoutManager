@@ -137,6 +137,7 @@ static void destroy_layoutManagerSingleton() {
 }
 
 - (void) dealloc {
+	[[NSNotificationCenter defaultCenter] removeObserver:self];
 	[self removeAllConstraints];
 	
 	[viewsToProcess release];
