@@ -31,16 +31,16 @@
 @interface CHLayoutContainer : NSObject
 {
 	NSString * layoutName;
-	NSMutableArray * constraints;
+	NSMutableArray * layoutConstraints;
 }
 
 @property (nonatomic, copy) NSString * layoutName;
-@property (readonly) NSMutableArray * constraints;
+@property (readonly) NSMutableArray * layoutConstraints;
 
 @end
 
 @implementation CHLayoutContainer
-@synthesize layoutName, constraints;
+@synthesize layoutName, layoutConstraints;
 
 + (id) container {
 	return [[[self alloc] init] autorelease];
@@ -49,13 +49,13 @@
 - (id) init {
 	self = [super init];
 	if (self) {
-		constraints = [[NSMutableArray alloc] init];
+		layoutConstraints = [[NSMutableArray alloc] init];
 	}
 	return self;
 }
 
 - (void) dealloc {
-	[constraints release];
+	[layoutConstraints release];
 	[layoutName release];
 	[super dealloc];
 }
@@ -138,7 +138,7 @@ static void destroy_layoutManagerSingleton() {
 
 - (void) dealloc {
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
-	[self removeAllConstraints];
+	[self removeAllLayoutConstraints];
 	
 	[viewsToProcess release];
 	[processedViews release];
@@ -146,7 +146,7 @@ static void destroy_layoutManagerSingleton() {
 	[super dealloc];
 }
 
-- (void) removeAllConstraints {
+- (void) removeAllLayoutConstraints {
 	[constraints removeAllObjects];
 }
 
@@ -157,7 +157,7 @@ static void destroy_layoutManagerSingleton() {
 	}
 	[processedViews addObject:aView];
 	
-	NSArray * viewConstraints = [self constraintsOnView:aView];
+	NSArray * viewConstraints = [self layoutConstraintsOnView:aView];
 	for (CHLayoutConstraint * constraint in viewConstraints) {
 		[constraint applyToTargetView:aView];
 	}
@@ -175,7 +175,7 @@ static void destroy_layoutManagerSingleton() {
 		for (NSView * subview in superSubviews) {
 			if (subview == aView) { continue; }
 			
-			NSArray * subviewConstraints = [self constraintsOnView:subview];
+			NSArray * subviewConstraints = [self layoutConstraintsOnView:subview];
 			for (CHLayoutConstraint * subviewConstraint in subviewConstraints) {
 				NSView * sourceView = [subview relativeViewForName:[subviewConstraint sourceName]];
 				if (sourceView == aView) {
@@ -188,7 +188,7 @@ static void destroy_layoutManagerSingleton() {
 	//subviews constrained to this view
 	NSArray * subviews = [aView subviews];
 	for (NSView * subview in subviews) {
-		NSArray * subviewConstraints = [self constraintsOnView:subview];
+		NSArray * subviewConstraints = [self layoutConstraintsOnView:subview];
 		for (CHLayoutConstraint * subviewConstraint in subviewConstraints) {
 			NSView * sourceView = [subview relativeViewForName:[subviewConstraint sourceName]];
 			if (sourceView == aView) {
@@ -265,7 +265,7 @@ static void destroy_layoutManagerSingleton() {
 
 - (void) chlayoutautoremove_dynamicDealloc {
 	if ([self isKindOfClass:[NSView class]]) { //to prevent people from being stupid
-		[[CHLayoutManager sharedLayoutManager] removeConstraintsFromView:(NSView *)self];
+		[[CHLayoutManager sharedLayoutManager] removeLayoutConstraintsFromView:(NSView *)self];
 		[[CHLayoutManager sharedLayoutManager] setLayoutName:nil forView:(NSView *)self];
 		//THIS IS NOT A RECURSIVE CALL
 		//see the big comment above for why
@@ -273,30 +273,30 @@ static void destroy_layoutManagerSingleton() {
 	}
 }
 
-- (void) addConstraint:(CHLayoutConstraint *)constraint toView:(NSView *)view {
+- (void) addLayoutConstraint:(CHLayoutConstraint *)constraint toView:(NSView *)view {
 	CHLayoutContainer * viewContainer = [constraints objectForKey:view];
 	if (viewContainer == nil) {
 		viewContainer = [CHLayoutContainer container];
 		[constraints setObject:viewContainer forKey:view];
 	}
 	
-	[[viewContainer constraints] addObject:constraint];
+	[[viewContainer layoutConstraints] addObject:constraint];
 	[self beginProcessingView:view];
 }
 
-- (void) removeConstraintsFromView:(NSView *)view {
+- (void) removeLayoutConstraintsFromView:(NSView *)view {
 	CHLayoutContainer * viewContainer = [constraints objectForKey:view];
-	[[viewContainer constraints] removeAllObjects];
+	[[viewContainer layoutConstraints] removeAllObjects];
 	
-	if ([[viewContainer constraints] count] == 0 && [viewContainer layoutName] == nil) {
+	if ([[viewContainer layoutConstraints] count] == 0 && [viewContainer layoutName] == nil) {
 		[constraints removeObjectForKey:view];
 	}
 }
 
-- (NSArray *) constraintsOnView:(NSView *)view {
+- (NSArray *) layoutConstraintsOnView:(NSView *)view {
 	CHLayoutContainer * container = [constraints objectForKey:view];
 	if (container == nil) { return [NSArray array]; }
-	return [[[container constraints] copy] autorelease];
+	return [[[container layoutConstraints] copy] autorelease];
 }
 
 - (NSString *) layoutNameForView:(NSView *)view {
@@ -307,7 +307,7 @@ static void destroy_layoutManagerSingleton() {
 - (void) setLayoutName:(NSString *)name forView:(NSView *)view {
 	CHLayoutContainer * viewContainer = [constraints objectForKey:view];
 	
-	if (name == nil && [[viewContainer constraints] count] == 0) {
+	if (name == nil && [[viewContainer layoutConstraints] count] == 0) {
 		[constraints removeObjectForKey:view];
 	} else {
 		if (viewContainer == nil) {

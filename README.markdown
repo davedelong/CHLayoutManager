@@ -1,3 +1,5 @@
+**This project is no longer considered under active development, and has been deprecated in favor of built-in API.  Please see the "Supported Platforms" section for more information.**
+
 #CHLayoutManager
 
 CHLayoutManager is a way to add positioning and sizing constraints on views.  The easiest way to understand this is with an example:
@@ -35,7 +37,9 @@ Then `#import "CHLayout.h"` in any .m file that needs to apply constraints to vi
 
 ##Supported Platforms
 
-- Mac OS X 10.5+
+- Mac OS X 10.5 - 10.6.
+
+`CHLayoutManager` will not be supported beyond 10.6.  `CHLayoutManager` will work on 10.7, but it is recommended that you use the layout system in 10.7 as opposed to this.  While they are compatible, the mechanism in 10.7 is far more flexible.
 
 ##Special Considerations
 
@@ -51,7 +55,7 @@ Then `#import "CHLayout.h"` in any .m file that needs to apply constraints to vi
 
 CHLayoutManager is licensed under the MIT license, which is reproduced in its entirety here:
 
->Copyright (c) 2010 Dave DeLong
+>Copyright (c) 2011 Dave DeLong
 >
 >Permission is hereby granted, free of charge, to any person obtaining a copy
 >of this software and associated documentation files (the "Software"), to deal

@@ -36,23 +36,23 @@
 	// Insert code here to initialize your application 
 	
 	[button1 setLayoutName:@"button1"];
-	[button2 addConstraint:[CHLayoutConstraint constraintWithAttribute:CHLayoutConstraintAttributeMinX relativeTo:@"button1" attribute:CHLayoutConstraintAttributeMaxX]];
-	[button2 addConstraint:[CHLayoutConstraint constraintWithAttribute:CHLayoutConstraintAttributeMaxY relativeTo:@"button1" attribute:CHLayoutConstraintAttributeMaxY]];
-	[button2 addConstraint:[CHLayoutConstraint constraintWithAttribute:CHLayoutConstraintAttributeWidth relativeTo:@"button1" attribute:CHLayoutConstraintAttributeWidth]];
+	[button2 addLayoutConstraint:[CHLayoutConstraint constraintWithAttribute:CHLayoutConstraintAttributeMinX relativeTo:@"button1" attribute:CHLayoutConstraintAttributeMaxX]];
+	[button2 addLayoutConstraint:[CHLayoutConstraint constraintWithAttribute:CHLayoutConstraintAttributeMaxY relativeTo:@"button1" attribute:CHLayoutConstraintAttributeMaxY]];
+	[button2 addLayoutConstraint:[CHLayoutConstraint constraintWithAttribute:CHLayoutConstraintAttributeWidth relativeTo:@"button1" attribute:CHLayoutConstraintAttributeWidth]];
 	
 	[progress startAnimation:nil];
 	CHLayoutConstraint * centerHorizontal = [CHLayoutConstraint constraintWithAttribute:CHLayoutConstraintAttributeMidX relativeTo:@"superview" attribute:CHLayoutConstraintAttributeMidX];
 	CHLayoutConstraint * centerVertical = [CHLayoutConstraint constraintWithAttribute:CHLayoutConstraintAttributeMidY relativeTo:@"superview" attribute:CHLayoutConstraintAttributeMidY];
-	[progress addConstraint:centerHorizontal];
-	[progress addConstraint:centerVertical];
+	[progress addLayoutConstraint:centerHorizontal];
+	[progress addLayoutConstraint:centerVertical];
 	
-	[progress addConstraint:[CHLayoutConstraint constraintWithAttribute:CHLayoutConstraintAttributeMidXMidY relativeTo:@"superview" attribute:CHLayoutConstraintAttributeBoundsCenter]];
+	[progress addLayoutConstraint:[CHLayoutConstraint constraintWithAttribute:CHLayoutConstraintAttributeMidXMidY relativeTo:@"superview" attribute:CHLayoutConstraintAttributeBoundsCenter]];
 	
 	
 	[leftVerticalButton setLayoutName:@"leftVertical"];
-	[leftVerticalButton addConstraint:[CHLayoutConstraint constraintWithAttribute:CHLayoutConstraintAttributeMinX relativeTo:@"superview" attribute:CHLayoutConstraintAttributeMinX offset:37]];
-	[rightVerticalButton addConstraint:[CHLayoutConstraint constraintWithAttribute:CHLayoutConstraintAttributeMaxX relativeTo:@"superview" attribute:CHLayoutConstraintAttributeMaxX offset:-13]];
-	[rightVerticalButton addConstraint:[CHLayoutConstraint constraintWithAttribute:CHLayoutConstraintAttributeMinY relativeTo:@"leftVertical" attribute:CHLayoutConstraintAttributeMinY]];
+	[leftVerticalButton addLayoutConstraint:[CHLayoutConstraint constraintWithAttribute:CHLayoutConstraintAttributeMinX relativeTo:@"superview" attribute:CHLayoutConstraintAttributeMinX offset:37]];
+	[rightVerticalButton addLayoutConstraint:[CHLayoutConstraint constraintWithAttribute:CHLayoutConstraintAttributeMaxX relativeTo:@"superview" attribute:CHLayoutConstraintAttributeMaxX offset:-13]];
+	[rightVerticalButton addLayoutConstraint:[CHLayoutConstraint constraintWithAttribute:CHLayoutConstraintAttributeMinY relativeTo:@"leftVertical" attribute:CHLayoutConstraintAttributeMinY]];
 	
 #if NS_BLOCKS_AVAILABLE
 	
@@ -60,12 +60,12 @@
 		CGFloat superViewHeight = [[rightVerticalButton superview] frame].size.height;
 		return (superViewHeight - source);
 	};
-	[rightVerticalButton addConstraint:[CHLayoutConstraint constraintWithAttribute:CHLayoutConstraintAttributeMaxY relativeTo:@"leftVertical" attribute:CHLayoutConstraintAttributeMinY blockTransformer:transformer]];
+	[rightVerticalButton addLayoutConstraint:[CHLayoutConstraint constraintWithAttribute:CHLayoutConstraintAttributeMaxY relativeTo:@"leftVertical" attribute:CHLayoutConstraintAttributeMinY blockTransformer:transformer]];
 	
 #endif
 	
 //	[helpButton addConstraint:[CHLayoutConstraint constraintWithAttribute:CHLayoutConstraintAttributeMinX relativeTo:@"leftVertical" attribute:CHLayoutConstraintAttributeMinY scale:2.0 offset:0.0]];
-	[helpButton addConstraint:[CHLayoutConstraint constraintWithAttribute:CHLayoutConstraintAttributeMidXMidY relativeTo:@"button1" attribute:CHLayoutConstraintAttributeBoundsCenter]];
+	[helpButton addLayoutConstraint:[CHLayoutConstraint constraintWithAttribute:CHLayoutConstraintAttributeMidXMidY relativeTo:@"button1" attribute:CHLayoutConstraintAttributeBoundsCenter]];
 	
 	SinTransformer * sinTransformer = [[SinTransformer alloc] init];
 //	[helpButton addConstraint:[CHLayoutConstraint constraintWithAttribute:CHLayoutConstraintAttributeMinY relativeTo:@"button1" attribute:CHLayoutConstraintAttributeMinY valueTransformer:sinTransformer]];

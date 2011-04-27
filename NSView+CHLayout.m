@@ -49,16 +49,16 @@
 	return [[CHLayoutManager sharedLayoutManager] layoutNameForView:self];
 }
 
-- (void) addConstraint:(CHLayoutConstraint *)constraint {
-	[[CHLayoutManager sharedLayoutManager] addConstraint:constraint toView:self];
+- (void) addLayoutConstraint:(CHLayoutConstraint *)constraint {
+	[[CHLayoutManager sharedLayoutManager] addLayoutConstraint:constraint toView:self];
 }
 
-- (NSArray *) constraints {
-	return [[CHLayoutManager sharedLayoutManager] constraintsOnView:self];
+- (NSArray *) layoutConstraints {
+	return [[CHLayoutManager sharedLayoutManager] layoutConstraintsOnView:self];
 }
 
-- (void) removeAllConstraints {
-	[[CHLayoutManager sharedLayoutManager] removeConstraintsFromView:self];
+- (void) removeAllLayoutConstraints {
+	[[CHLayoutManager sharedLayoutManager] removeLayoutConstraintsFromView:self];
 }
 
 - (NSRect) valueForLayoutAttribute:(CHLayoutConstraintAttribute)attribute {

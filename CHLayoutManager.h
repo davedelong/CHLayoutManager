@@ -38,11 +38,11 @@
 
 + (id) sharedLayoutManager;
 
-- (void) removeAllConstraints;
+- (void) removeAllLayoutConstraints;
 
-- (void) addConstraint:(CHLayoutConstraint *)constraint toView:(NSView *)view;
-- (void) removeConstraintsFromView:(NSView *)view;
-- (NSArray *) constraintsOnView:(NSView *)view;
+- (void) addLayoutConstraint:(CHLayoutConstraint *)constraint toView:(NSView *)view;
+- (void) removeLayoutConstraintsFromView:(NSView *)view;
+- (NSArray *) layoutConstraintsOnView:(NSView *)view;
 - (NSString *) layoutNameForView:(NSView *)view;
 - (void) setLayoutName:(NSString *)name forView:(NSView *)view;
 
